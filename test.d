@@ -1,7 +1,7 @@
 //dmd -i -J=. -main -run test.d 0
 
 import std;
-import mkydbg;
+import mkydbg2;
 import folder.math;
 
 void main(string[] s){
@@ -21,5 +21,18 @@ void main(string[] s){
 	debugln!2( i++ + ++i );
 	debugln!3(  i++ + ++i  );
 	i++;debugln(i);i--;
-	
+	i.debugln;
+	int j=1;
+	//compareln!"<="(i,j); unmix needs to handle string templates first
+	//compareln!">="(i,j);
+	//compareln!"<="(j,i);
+	//compareln!">="(j,i);
+	warnlt(i,j);
+	warnlt(j,i);
+	j+=7;
+	warnlt(j,i);
+	i.warnlt(j);
+	j+=2;
+	warnlt(j,i);
+	i.warnlt(j);
 }

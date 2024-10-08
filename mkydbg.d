@@ -2,36 +2,7 @@ template unmix(string file=__FILE__,int line=__LINE__){
 	import std;
 	enum string unmix=import(file).split('\n').drop(line-1).front;
 }
-template innate(T,T startingvalue=T.init,alias discrim=void){//todo double check if this header works correctly
-	T innate=startingvalue;
-}
-// unittests for innate should be commented out TODO: write out explaination 
-/*
-import std;
-unittest{
-	alias foo=innate!int;
-	foo.writeln;
-	foo=3;
-	foo.writeln;
-}
-unittest{
-	alias bar=innate!int;
-	bar.writeln;
-	alias foobar=innate!(int,15,"foobar");
-	foobar.writeln;
-	bar.writeln;
-}
-unittest{
-	alias s=innate!string;
-	s.writeln;
-	alias t=innate!(string,"foo");
-	t.writeln;
-	alias u=innate!string;
-	u.writeln;
-	s="bar";
-	u.writeln;
-}
-*/
+
 char to1char(int i){
 	assert(i>=0&&i<=9);
 	return cast(char)('0'+i);

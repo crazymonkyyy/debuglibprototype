@@ -1,4 +1,4 @@
-import mkydbg;
+import mkydbg2;
 float safedivide(float a,float b){
 	if(b==0){
 		logln!2("/0 triggered");
