@@ -7,13 +7,6 @@ attempts to make a string for human consumtion including truncating data, some t
 
 */
 
-template Members(T){
-	import std.traits;
-	static if(is(T==enum)){
-		alias Members=EnumMembers!T;
-	} else {
-		alias Members=T.tupleof;
-}}
 template toprettystring(string somearg="hi"){
 	string toprettystring(T:void)(T* p)=>p==null ? "null":"void*";//for context pointers
 	

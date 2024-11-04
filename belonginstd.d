@@ -108,6 +108,13 @@ auto removeenum(T)(T t){
 	import core.internal.traits;
 	return OriginalType!T(t);
 }
+template Members(T){
+	import std.traits;
+	static if(is(T==enum)){
+		alias Members=EnumMembers!T;
+	} else {
+		alias Members=T.tupleof;
+}}
 
 //trivail algoriums?
 auto replacewhen(alias F,T)(T t,T t_)=>F(t)?t_:t;
@@ -129,3 +136,59 @@ unittest{
 	assert(bar.replacenull(3)==3);
 	assert(5.replacenull(3)==5);
 }
+//parse
+// I think part of the problem of std.conv being a mess is that strings are hard and theres some trade offs to make that should just be seperate, maybe three functions .to, .parse, .serialize
+//lazy minium implimtations
+nullable!int parse(T:int)(string s){
+	if(s.length==0){return nullable!int();}
+	string s_=s;
+	if(s[0]=='-'){s_=s[1..$];}
+	foreach(c;s_){
+		if(c!=' '&&(c<'0'||c>'9')){return nullable!int();}
+	}
+	return nullable!int(s.to!int);
+}
+string parse(T:string)(string s)=>s;
+unittest{
+	assert("1".parse!int==1);
+	assert("-1".parse!int==-1);
+	assert("foo".parse!int.isnull==true);
+	assert("foo".parse!string=="foo");
+}
+mixin template parsecli(data...){
+	void parsecli_(string[] args){
+		import std;
+		foreach(s;args){
+			if(s.length==0 || s[0]!='-'){continue;}
+			auto i=s.countUntil('=');
+			if(i==-1){continue;}
+			static foreach(arg;data){
+				if(arg.stringof==s[1..i]){
+					arg=s[i+1..$].parse!(typeof(arg)).replacenull(arg);
+				}
+			}
+		}
+	}
+}
+/*
+dmd -run parse.d -foo=1 -bar=hi
+dmd -run parse.d -foo=foobar -bar=hi
+void main(string[] s){
+	import std.stdio;
+	int foo;
+	string bar;
+	mixin parsecli!(foo,bar);
+	parsecli_(s);
+	foo.writeln;
+	bar.writeln;
+}
+*/
+//stdio
+void unixexcape(int i){
+	version(Windows) return;//TODO
+	("\033["~i.to!string~"m").write;
+}
+void reset()=>unixexcape(0);
+void underline()=>unixexcape(4);
+void unixcolor(int i)=>unixexcape(30+i%8);
+void warncolor(int i)=>unixcolor([7,4,5,3,6,1][max(i,0)%6]);//god why is the order of unix colors so strange
