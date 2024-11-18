@@ -17,6 +17,7 @@ struct softtabprinter{
 	int length;
 	void store(string s){
 		foreach(c;s){
+			if(length>=data.chr.length){return;}
 			data.chr[length++]=c;
 	}}
 	void print(){
