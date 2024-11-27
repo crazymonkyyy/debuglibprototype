@@ -1,7 +1,11 @@
-/**
-lazy "tsv" printer, not for real use, just solving the softtab problem
-**/
-//import std;
+/*
+currently non genertic because im unsure if anyone else will care in the slightest; could make the color scheme modifable, tabwidth internal to the struct etc.
+
+kinda bad code, I think this problem is hard for the problem statement
+*/
+
+import std;//todo remove writelns
+
 void print_(T)(ref T buf,ulong len){
 	asm{
 	mov RAX, 1;
@@ -10,6 +14,13 @@ void print_(T)(ref T buf,ulong len){
 	mov RDX,len;
 	syscall;
 }}
+void printunderline(string s){
+	s="\033[4m"~s~"\033[0m\n";
+	char* c=cast(char*)(&s[0]);
+	print_(*c,s.length);
+	//import std;
+	//s.writeln;
+}
 char to1char(int i){
 	i%=10;
 	return cast(char)('0'+i);
@@ -32,8 +43,10 @@ int tabwidth=8;
 struct softtabprinter{
 	char[9] details="\033[33m000|";
 	//------------------0123456789
+	import belonginstd;
+	enum colortable=[6,4,1,3,2,5,0];
 	void setcolor(int c){
-		details[3]=max(c,0)%7+'1';
+		details[3]=cast(char)(colortable[c.clamp(0,$-1)]+'1');
 	}
 	void setline(int l){
 		details[5..9]=l.to4char;
@@ -89,15 +102,13 @@ struct softtabprinter{
 	}
 	
 }
-//void main(string[] s){
-//	assert(s.length==2,"gib file");
-//	softtabprinter foo;
-//	foreach(i,data;File(s[1]).byLineCopy.enumerate){
-//		foo.setcolor(cast(int)i);
-//		foo.setline(cast(int)i);
-//		foo.store(data);
-//		foo.print;
-//		//foo.store("\n");
-//		//foo.print;
-//	}
-//}
+import belonginstd;
+alias thesofttabprinter()=innate!softtabprinter;
+void softln(T...)(int line,int color,T args){
+	thesofttabprinter!().setline(line);
+	thesofttabprinter!().setcolor(color);
+	foreach(t;args){
+		thesofttabprinter!().store(t.to!string);//TODO swap to my to
+	}
+	thesofttabprinter!().print;
+}
